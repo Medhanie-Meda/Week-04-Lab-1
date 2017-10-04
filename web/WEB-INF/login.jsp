@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,10 +10,11 @@
         <h1>Remember Me Login Page</h1>
         <form action="login" method="post">
             <p>Username: <input type="text" name="uName" value="${user.username}" /></p>
-            <p>Password: <input type="text" name="pass" value="${user.password}" /></p>
+            <p>Password: <input type="text" name="pass" /></p>
             <p><input type="submit" value="Login"></p>
-            <p><input type="checkbox" name="remember"> Remember me</p>
-    </form>
-    ${message}
+            <p><input type="checkbox"  name="remember" > Remember me </input></p>
+            
+    </form>        
+        ${message}
     </body>
 </html>

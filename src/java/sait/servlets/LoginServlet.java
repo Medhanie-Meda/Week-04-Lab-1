@@ -19,24 +19,59 @@ public class LoginServlet extends HttpServlet
             throws ServletException, IOException 
     {        
         String action = request.getParameter("action");
-        if (action == null ||action.equals("login")) 
-        {
-            Cookie[] cookies = request.getCookies();
-            String cookieName = "username";
-            String cookieValue = "";        
-            for(Cookie cookie: cookies) 
+//        if (action == null || action.equals("login")) 
+//        {
+//            Cookie[] cookies = request.getCookies();
+//            String cookieName = "username";
+//            String cookieValue = "";   
+//            
+//            if(cookies != null)
+//            {
+//                for(Cookie cookie: cookies) 
+//                {
+//                    if(cookieName.equals( cookie.getName()))
+//                    {
+//                        cookieValue = cookie.getValue();
+//                    }
+//                }
+//            }
+//            User user = new User(cookieValue,null);
+//            request.setAttribute("user", user);
+//            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);  
+//            return;
+//        }
+        System.out.println("action:"+action);
+        if (action == null) 
+        {           
+            HttpSession session = request.getSession();
+           
+            if(session.getAttribute("user") != null)
             {
-                if(cookieName.equals(cookie.getName()))
-                {
-                    cookieValue = cookie.getValue();
-                }
+                response.sendRedirect("home");
+                return;
             }
             
-            User user = new User(cookieValue,null);
-            request.setAttribute("user", user);
-            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);  
-            return;
-        }
+            Cookie[] cookies = request.getCookies();
+            String cookieName = "username";
+            String cookieValue = "";   
+            
+            if(cookies != null)
+            {
+                for(Cookie cookie: cookies) 
+                {
+                    if(cookieName.equals( cookie.getName()))
+                    {
+                        cookieValue = cookie.getValue();
+                    }
+                }
+                User user = new User(cookieValue,null);
+                System.out.println(user.getUsername());
+                request.setAttribute("user", user);
+            }
+           
+            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+           return;
+        } 
         if(action.equals("logout"))
         {
             HttpSession session = request.getSession();
@@ -44,16 +79,16 @@ public class LoginServlet extends HttpServlet
             request.setAttribute("message", "You have successfuly logged out.");
             getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
             return;
-        }        
+        }   
+        
     }
    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
+            throws ServletException, IOException 
+    {        
         String username = request.getParameter("uName");
         String password = request.getParameter("pass");
-      //  String url;
         
         User user = new User(username, password);
         UserService us = new UserService();
@@ -86,6 +121,7 @@ public class LoginServlet extends HttpServlet
         else
         {
             c.setMaxAge(0);
+            response.addCookie(c);    
         }        
         response.sendRedirect("home");
     }
