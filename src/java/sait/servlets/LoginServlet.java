@@ -17,34 +17,12 @@ public class LoginServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
-    {        
+    {           
         String action = request.getParameter("action");
-//        if (action == null || action.equals("login")) 
-//        {
-//            Cookie[] cookies = request.getCookies();
-//            String cookieName = "username";
-//            String cookieValue = "";   
-//            
-//            if(cookies != null)
-//            {
-//                for(Cookie cookie: cookies) 
-//                {
-//                    if(cookieName.equals( cookie.getName()))
-//                    {
-//                        cookieValue = cookie.getValue();
-//                    }
-//                }
-//            }
-//            User user = new User(cookieValue,null);
-//            request.setAttribute("user", user);
-//            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);  
-//            return;
-//        }
-        System.out.println("action:"+action);
+        
         if (action == null) 
-        {           
-            HttpSession session = request.getSession();
-           
+        {  
+            HttpSession session = request.getSession();           
             if(session.getAttribute("user") != null)
             {
                 response.sendRedirect("home");
@@ -56,31 +34,55 @@ public class LoginServlet extends HttpServlet
             String cookieValue = "";   
             
             if(cookies != null)
-            {
+            {                
                 for(Cookie cookie: cookies) 
                 {
                     if(cookieName.equals( cookie.getName()))
                     {
                         cookieValue = cookie.getValue();
                     }
-                }
-                User user = new User(cookieValue,null);
-                System.out.println(user.getUsername());
+                }   
+                
+                User user = new User(cookieValue, null);
                 request.setAttribute("user", user);
+                if (!cookieValue.equals(""))
+                request.setAttribute("checked", "checked");
             }
-           
-            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+            
+           getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
            return;
         } 
+        
         if(action.equals("logout"))
         {
             HttpSession session = request.getSession();
             session.removeAttribute("user");
+            
+            Cookie[] cookies = request.getCookies();
+            String cookieName = "username";
+            String cookieValue = "";   
+            
+            if(cookies != null)
+            {                
+                for(Cookie cookie: cookies) 
+                {
+                    if(cookieName.equals( cookie.getName()))
+                    {
+                        cookieValue = cookie.getValue();
+                    }
+                }   
+                
+                User user = new User(cookieValue, null);
+                request.setAttribute("user", user);
+                request.setAttribute("checked", "checked");
+
+            }
+            
+            
             request.setAttribute("message", "You have successfuly logged out.");
             getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
             return;
-        }   
-        
+        } 
     }
    
     @Override
@@ -106,6 +108,7 @@ public class LoginServlet extends HttpServlet
             getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
             return;
         }
+        
         HttpSession session = request.getSession();
         session.setAttribute("user", user);
         
@@ -121,8 +124,9 @@ public class LoginServlet extends HttpServlet
         else
         {
             c.setMaxAge(0);
-            response.addCookie(c);    
-        }        
+            response.addCookie(c); 
+            request.setAttribute("checked", null);
+        } 
         response.sendRedirect("home");
     }
 
